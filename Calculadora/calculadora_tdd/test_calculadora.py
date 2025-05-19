@@ -1,43 +1,67 @@
-from calculadora import Calculadora
 import pytest
-import math
+from calculadora import Calculadora
 
-def test_soma():
-    calc = Calculadora()
-    assert calc.somar(2, 3) == 5
+@pytest.fixture
+def calc():
+    return Calculadora()
 
-def test_subtracao():
-    calc = Calculadora()
-    assert calc.subtrair(5, 2) == 3
+@pytest.mark.parametrize("a, b, esperado", [
+    (2, 3, 5),
+    (-1, 1, 0),
+    (0, 0, 0),
+])
+def test_soma(calc, a, b, esperado):
+    assert calc.somar(a, b) == esperado
 
-def test_multiplicacao():
-    calc = Calculadora()
-    assert calc.multiplicar(3, 4) == 12
+@pytest.mark.parametrize("a, b, esperado", [
+    (5, 2, 3),
+    (10, 10, 0),
+    (-5, -5, 0),
+])
+def test_subtracao(calc, a, b, esperado):
+    assert calc.subtrair(a, b) == esperado
 
-def test_divisao():
-    calc = Calculadora()
-    assert calc.dividir(10, 2) == 5
+@pytest.mark.parametrize("a, b, esperado", [
+    (3, 4, 12),
+    (0, 5, 0),
+    (-2, 3, -6),
+])
+def test_multiplicacao(calc, a, b, esperado):
+    assert calc.multiplicar(a, b) == esperado
 
-def test_divisao_por_zero():
-    calc = Calculadora()
+@pytest.mark.parametrize("a, b, esperado", [
+    (10, 2, 5),
+    (9, 3, 3),
+    (7.5, 2.5, 3),
+])
+def test_divisao(calc, a, b, esperado):
+    assert calc.dividir(a, b) == esperado
+
+def test_divisao_por_zero(calc):
     with pytest.raises(ZeroDivisionError):
         calc.dividir(5, 0)
 
-def test_potencia():
-    calc = Calculadora()
-    assert calc.potencia(2, 3) == 8
+@pytest.mark.parametrize("base, expoente, esperado", [
+    (2, 3, 8),
+    (5, 0, 1),
+    (9, 0.5, 3),
+])
+def test_potencia(calc, base, expoente, esperado):
+    assert calc.potencia(base, expoente) == esperado
 
-def test_raiz_quadrada():
-    calc = Calculadora()
-    assert calc.raiz(9) == 3
+@pytest.mark.parametrize("numero, esperado", [
+    (9, 3),
+    (0, 0),
+    (16, 4),
+])
+def test_raiz_quadrada(calc, numero, esperado):
+    assert calc.raiz(numero) == esperado
 
-def test_raiz_quadrada_negativa():
-    calc = Calculadora()
+def test_raiz_quadrada_negativa(calc):
     with pytest.raises(ValueError):
         calc.raiz(-1)
 
-def test_historico_de_operacoes():
-    calc = Calculadora()
+def test_historico_de_operacoes(calc):
     calc.somar(2, 2)
     calc.subtrair(5, 1)
     assert calc.historico == [
@@ -45,7 +69,11 @@ def test_historico_de_operacoes():
         "Subtraiu 5 - 1 = 4"
     ]
 
-def test_operacoes_com_tipo_invalido():
-    calc = Calculadora()
+@pytest.mark.parametrize("a, b", [
+    ("a", 1),
+    (None, 3),
+    ([1], 2),
+])
+def test_operacoes_com_tipo_invalido(calc, a, b):
     with pytest.raises(TypeError):
-        calc.somar("a", 1)
+        calc.somar(a, b)
