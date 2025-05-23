@@ -1,0 +1,7 @@
+# Logs e relatórios do Robot Framework
+*.log
+*.html
+*.xml
+output.xml
+log.html
+report.html
